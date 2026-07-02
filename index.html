@@ -3,97 +3,236 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Toko Brownies Lumer</title>
+    <title>Brownies Yummy Rancaekek</title>
     <style>
-        /* --- RUMUS DASAR --- */
+        /* Desain Dasar */
         body {
-            font-family: 'Segoe UI', Roboto, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #fdf8f5;
-            color: #3e2723;
+            background-color: #fcf8f5;
+            color: #4a2c11;
         }
 
         header {
-            background-color: #5d4037;
-            color: white;
-            padding: 20px;
+            background-color: #5c3a21; /* Cokelat khas brownies */
+            color: #fff;
             text-align: center;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 2rem 1rem;
+            position: relative;
         }
 
-        /* --- RUMUS GRID (Agar kartu sejajar) --- */
-        .katalog {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-            gap: 25px;
-            padding: 40px 20px;
-            max-width: 1200px;
-            margin: 0 auto;
+        header h1 {
+            margin: 0;
+            font-size: 2.5rem;
         }
 
-        /* --- RUMUS KARTU PRODUK --- */
-        .kartu-produk {
-            background: white;
-            border-radius: 15px;
-            overflow: hidden;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        header p {
+            margin: 0.5rem 0 0;
+            font-style: italic;
+            color: #dfbda3;
+        }
+
+        /* Navigasi / Bar Atas Pembantu */
+        .nav-cart {
+            background-color: #442816;
+            padding: 0.8rem 2rem;
             display: flex;
-            flex-direction: column; /* Membuat isi kartu memanjang ke bawah */
-            transition: transform 0.3s ease;
+            justify-content: flex-end;
+            position: sticky;
+            top: 0;
+            z-index: 999;
         }
 
-        .kartu-produk:hover {
-            transform: translateY(-10px);
+        .cart-toggle-btn {
+            background-color: #dfbda3;
+            color: #442816;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-weight: bold;
+            cursor: pointer;
         }
 
-        /* --- RUMUS GAMBAR (Agar Rapi & Tidak Gepeng) --- */
-        .gambar-produk {
-            width: 100%;
-            height: 250px;       /* Tinggi semua gambar disamakan */
-            object-fit: cover;    /* Foto otomatis dipotong proporsional */
-            object-position: center;
+        /* Layout Utama (Produk + Keranjang) */
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+            display: grid;
+            grid-template-columns: 3fr 1fr;
+            gap: 2rem;
         }
 
-        .konten {
-            padding: 20px;
+        /* Section Grid Produk (Menampung 8 Produk) */
+        .product-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .product-card {
+            background: #fff;
+            border: 1px solid #e7dcd3;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
             display: flex;
             flex-direction: column;
-            flex-grow: 1; /* Memastikan area teks mengisi ruang yang ada */
+            justify-content: space-between;
+            transition: transform 0.2s;
         }
 
-        h3 {
-            margin: 0 0 10px 0;
+        .product-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .product-card img {
+            width: 100%;
+            height: 180px;
+            object-fit: cover;
+            background-color: #eee;
+        }
+
+        .product-info {
+            padding: 1rem;
+            text-align: center;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .product-info h3 {
+            margin: 0 0 0.5rem;
+            font-size: 1.2rem;
+            color: #5c3a21;
+        }
+
+        .product-info p {
+            margin: 0 0 1rem;
+            font-size: 0.9rem;
+            color: #706055;
+            line-height: 1.4;
+        }
+
+        .product-price {
+            font-weight: bold;
+            color: #b55d24;
+            font-size: 1.1rem;
+            margin-bottom: 1rem !important;
+        }
+
+        .btn-add-to-cart {
+            background-color: #5c3a21;
+            color: white;
+            border: none;
+            padding: 0.6rem;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+            font-weight: bold;
+            transition: background 0.2s;
+        }
+
+        .btn-add-to-cart:hover {
+            background-color: #7a4f2d;
+        }
+
+        /* Sidebar Keranjang Belanja & Checkout */
+        .cart-sidebar {
+            background: #fff;
+            border: 1px solid #e7dcd3;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            height: fit-content;
+            position: sticky;
+            top: 80px;
+        }
+
+        .cart-sidebar h2 {
+            margin-top: 0;
+            color: #5c3a21;
+            border-bottom: 2px solid #e7dcd3;
+            padding-bottom: 0.5rem;
             font-size: 1.4rem;
         }
 
-        .deskripsi {
+        .cart-items {
+            list-style: none;
+            padding: 0;
+            margin: 0 0 1.5rem;
+            max-height: 240px;
+            overflow-y: auto;
+        }
+
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
             font-size: 0.9rem;
-            color: #795548;
-            margin-bottom: 15px;
-            flex-grow: 1; /* Mendorong harga dan tombol ke bawah agar sejajar */
+            padding: 0.5rem 0;
+            border-bottom: 1px dashed #e7dcd3;
         }
 
-        .harga {
-            color: #d84315;
+        .cart-item-name {
+            font-weight: 500;
+        }
+
+        .cart-item-remove {
+            background: none;
+            border: none;
+            color: #d32f2f;
+            cursor: pointer;
+            font-size: 0.8rem;
+            padding: 0 5px;
+        }
+
+        .cart-total {
+            font-size: 1.1rem;
             font-weight: bold;
-            font-size: 1.3rem;
-            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 2px solid #e7dcd3;
         }
 
-        .tombol-beli {
-            background-color: #5d4037;
+        .btn-checkout {
+            background-color: #b55d24;
             color: white;
             border: none;
-            padding: 12px;
-            border-radius: 8px;
-            font-weight: bold;
+            padding: 0.8rem 1rem;
+            border-radius: 4px;
             cursor: pointer;
-            transition: background 0.3s;
+            width: 100%;
+            margin-top: 1rem;
+            font-size: 1rem;
+            font-weight: bold;
+            transition: background 0.2s;
         }
 
-        .tombol-beli:hover {
-            background-color: #3e2723;
+        .btn-checkout:hover {
+            background-color: #d16f30;
+        }
+
+        .empty-message {
+            font-style: italic;
+            color: #9c8c82;
+            text-align: center;
+            padding: 1rem 0;
+        }
+
+        /* Responsif untuk Layar HP */
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+            .cart-sidebar {
+                position: relative;
+                top: 0;
+            }
         }
     </style>
 </head>
@@ -104,44 +243,205 @@
         <p>Sensasi Cokelat Lumer Kualitas Premium</p>
     </header>
 
-    <section class="katalog">
-        
-        <div class="kartu-produk">
-            <img src="fudge-brownies.jpg" alt="Fudge Brownies" class="gambar-produk">
-            <div class="konten">
-                <h3>Fudgy Brownies</h3>
-                <p class="deskripsi">Cokelat pekat dengan tekstur kenyal dan lapisan shiny crust yang cantik.</p>
-                <p class="harga">Rp 45.000</p>
-                <button class="tombol-beli">Pesan Sekarang</button>
+    <!-- Bar Navigasi Keranjang -->
+    <div class="nav-cart">
+        <button class="cart-toggle-btn" onclick="scrollToCart()">
+            🛒 Keranjang (<span id="cart-count">0</span>)
+        </button>
+    </div>
+
+    <div class="container">
+        <!-- Area 8 Produk Brownies -->
+        <section class="product-section">
+            
+            <!-- Produk 1 (Dari web asli Anda) -->
+            <div class="product-card">
+                <img alt="Fudge Brownies" src="fudge-brownies.jpg">
+                <div class="product-info">
+                    <h3>Fudgy Brownies</h3>
+                    <p>Cokelat pekat dengan tekstur kenyal dan lapisan shiny crust yang cantik.</p>
+                    <p class="product-price">Rp 45.000</p>
+                    <button class="btn-add-to-cart" onclick="tambahKeKeranjang('Fudgy Brownies', 45000)">Tambah ke Keranjang</button>
+                </div>
             </div>
-        </div>
 
-        <div class="kartu-produk">
-            <img src="keju-brownies.jpg" alt="Brownies Keju" class="gambar-produk">
-            <div class="konten">
-                <h3>Cheese Cream Melt</h3>
-                <p class="deskripsi">Perpaduan brownies cokelat dan lapisan keju gurih yang melimpah.</p>
-                <p class="harga">Rp 55.000</p>
-                <button class="tombol-beli">Pesan Sekarang</button>
+            <!-- Produk 2 (Dari web asli Anda) -->
+            <div class="product-card">
+                <img alt="Brownies Keju" src="keju-brownies.jpg">
+                <div class="product-info">
+                    <h3>Cheese Cream Melt</h3>
+                    <p>Perpaduan brownies cokelat dan lapisan keju gurih yang melimpah.</p>
+                    <p class="product-price">Rp 55.000</p>
+                    <button class="btn-add-to-cart" onclick="tambahKeKeranjang('Cheese Cream Melt', 55000)">Tambah ke Keranjang</button>
+                </div>
             </div>
-        </div>
 
-        <div class="kartu-produk">
-            <img src="Almond-brownies.jpg" alt="Brownies Almond" class="gambar-produk">
-            <div class="konten">
-                <h3>Roasted Almond</h3>
-                <p class="deskripsi">Taburan kacang almond panggang yang renyah di setiap gigitan.</p>
-                <p class="harga">Rp 50.000</p>
-                <button class="tombol-beli">Pesan Sekarang</button>
+            <!-- Produk 3 (Dari web asli Anda) -->
+            <div class="product-card">
+                <img alt="Brownies Almond" src="Almond-brownies.jpg">
+                <div class="product-info">
+                    <h3>Roasted Almond</h3>
+                    <p>Taburan kacang almond panggang yang renyah di setiap gigitan.</p>
+                    <p class="product-price">Rp 50.000</p>
+                    <button class="btn-add-to-cart" onclick="tambahKeKeranjang('Roasted Almond', 50000)">Tambah ke Keranjang</button>
+                </div>
             </div>
-        </div>
 
-    </section>
+            <!-- Produk 4 (Baru) -->
+            <div class="product-card">
+                <img alt="Brownies Matchalicious" src="matcha-brownies.jpg">
+                <div class="product-info">
+                    <h3>Matchalicious Melt</h3>
+                    <p>Brownies dengan paduan cokelat putih dan bubuk matcha premium khas Jepang.</p>
+                    <p class="product-price">Rp 52.000</p>
+                    <button class="btn-add-to-cart" onclick="tambahKeKeranjang('Matchalicious Melt', 52000)">Tambah ke Keranjang</button>
+                </div>
+            </div>
 
+            <!-- Produk 5 (Baru) -->
+            <div class="product-card">
+                <img alt="Brownies Lotus Biscoff" src="lotus-brownies.jpg">
+                <div class="product-info">
+                    <h3>Lotus Biscoff Delight</h3>
+                    <p>Sensasi selai dan biskuit Lotus Biscoff yang sedang tren di atas fudgy brownies.</p>
+                    <p class="product-price">Rp 60.000</p>
+                    <button class="btn-add-to-cart" onclick="tambahKeKeranjang('Lotus Biscoff Delight', 60000)">Tambah ke Keranjang</button>
+                </div>
+            </div>
+
+            <!-- Produk 6 (Baru) -->
+            <div class="product-card">
+                <img alt="Brownies Red Velvet" src="redvelvet-brownies.jpg">
+                <div class="product-info">
+                    <h3>Red Velvet Choco</h3>
+                    <p>Warna merah mewah dengan kombinasi cream cheese lembut di dalamnya.</p>
+                    <p class="product-price">Rp 58.000</p>
+                    <button class="btn-add-to-cart" onclick="tambahKeKeranjang('Red Velvet Choco', 58000)">Tambah ke Keranjang</button>
+                </div>
+            </div>
+
+            <!-- Produk 7 (Baru) -->
+            <div class="product-card">
+                <img alt="Brownies Choco Chips" src="chocochip-brownies.jpg">
+                <div class="product-info">
+                    <h3>Double Chocochips</h3>
+                    <p>Bagi pencinta cokelat sejati, dipenuhi limpahan chocochips luar dan dalam.</p>
+                    <p class="product-price">Rp 47.000</p>
+                    <button class="btn-add-to-cart" onclick="tambahKeKeranjang('Double Chocochips', 47000)">Tambah ke Keranjang</button>
+                </div>
+            </div>
+
+            <!-- Produk 8 (Baru) -->
+            <div class="product-card">
+                <img alt="Brownies Medley Topping" src="medley-brownies.jpg">
+                <div class="product-info">
+                    <h3>Signature Medley Box</h3>
+                    <p>Satu box isi sekat dengan 4 varian topping berbeda untuk dicicipi bersama keluarga.</p>
+                    <p class="product-price">Rp 65.000</p>
+                    <button class="btn-add-to-cart" onclick="tambahKeKeranjang('Signature Medley Box', 65000)">Tambah ke Keranjang</button>
+                </div>
+            </div>
+
+        </section>
+
+        <!-- Sidebar Keranjang Belanja & Checkout -->
+        <aside class="cart-sidebar" id="cart-section">
+            <h2>Keranjang Belanja</h2>
+            <ul id="cart-items" class="cart-items">
+                <li class="empty-message">Keranjang masih kosong</li>
+            </ul>
+            
+            <div class="cart-total">
+                <span>Total Harga:</span>
+                <span id="cart-total-price">Rp 0</span>
+            </div>
+            
+            <button class="btn-checkout" onclick="prosesCheckout()">Checkout Sekarang</button>
+        </aside>
+    </div>
+
+    <!-- Logika JavaScript untuk Fungsi Fitur E-Commerce -->
+    <script>
+        // Array untuk menampung item yang dibeli
+        let keranjang = [];
+        let totalHarga = 0;
+
+        // Fungsi menambah item ke keranjang
+        function tambahKeKeranjang(namaProduk, hargaProduk) {
+            keranjang.push({ nama: namaProduk, harga: hargaProduk });
+            totalHarga += hargaProduk;
+            
+            perbaruiTampilanKeranjang();
+        }
+
+        // Fungsi menghapus item tertentu dari keranjang
+        function hapusDariKeranjang(index) {
+            totalHarga -= keranjang[index].harga;
+            keranjang.splice(index, 1);
+            
+            perbaruiTampilanKeranjang();
+        }
+
+        // Fungsi sinkronisasi data ke tampilan HTML
+        function perbaruiTampilanKeranjang() {
+            // Update counter tombol atas
+            document.getElementById('cart-count').innerText = keranjang.length;
+
+            const kontainerItem = document.getElementById('cart-items');
+            kontainerItem.innerHTML = ''; // Reset tampilan list
+
+            if (keranjang.length === 0) {
+                kontainerItem.innerHTML = '<li class="empty-message">Keranjang masih kosong</li>';
+            } else {
+                keranjang.forEach((item, index) => {
+                    const li = document.createElement('li');
+                    li.className = 'cart-item';
+                    li.innerHTML = `
+                        <span class="cart-item-name">${item.nama}</span>
+                        <span>
+                            Rp ${item.harga.toLocaleString('id-ID')}
+                            <button class="cart-item-remove" onclick="hapusDariKeranjang(${index})">❌</button>
+                        </span>
+                    `;
+                    kontainerItem.appendChild(li);
+                });
+            }
+
+            // Menampilkan format mata uang Rupiah pada Total
+            document.getElementById('cart-total-price').innerText = `Rp ${totalHarga.toLocaleString('id-ID')}`;
+        }
+
+        // Fitur Checkout mengarahkan pesanan lewat WhatsApp (Sangat cocok untuk UMKM)
+        function prosesCheckout() {
+            if (keranjang.length === 0) {
+                alert('Keranjang Anda masih kosong. Silakan pilih brownies terlebih dahulu!');
+                return;
+            }
+
+            // Menyusun format pesan teks untuk WhatsApp otomatis
+            let nomorWhatsApp = "6281234567890"; // Ganti dengan nomor WA Toko Anda (Gunakan kode negara 62)
+            let teksPesan = `Halo Brownies Yummy Rancaekek, saya ingin memesan:\n\n`;
+            
+            keranjang.forEach((item, index) => {
+                teksPesan += `- ${item.nama} (Rp ${item.harga.toLocaleString('id-ID')})\n`;
+            });
+            
+            teksPesan += `\n*Total Akhir: Rp ${totalHarga.toLocaleString('id-ID')}*`;
+            teksPesan += `\n\nMohon info detail pengiriman dan metode pembayarannya ya, terima kasih!`;
+
+            // Enkode teks agar aman dalam URL format beralih ke aplikasi WhatsApp
+            let urlWhatsApp = `https://wa.me/${nomorWhatsApp}?text=${encodeURIComponent(teksPesan)}`;
+            
+            // Konfirmasi checkout ke pengguna
+            if(confirm(`Total belanjaan Anda adalah Rp ${totalHarga.toLocaleString('id-ID')}.\nLanjutkan checkout via WhatsApp?`)) {
+                window.open(urlWhatsApp, '_blank');
+            }
+        }
+
+        // Fungsi animasi scroll otomatis ke keranjang saat menekan tombol di HP
+        function scrollToCart() {
+            document.getElementById('cart-section').scrollIntoView({ behavior: 'smooth' });
+        }
+    </script>
 </body>
 </html>
-<!--update--> 
-<!--update yang kesekian kalinya--> 
-<!-- fix deploy -->
-<!-- redeploy -->
-
