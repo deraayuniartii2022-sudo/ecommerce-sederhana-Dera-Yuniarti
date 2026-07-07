@@ -1,0 +1,688 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Choco Bites by Dera</title>
+    <style>
+        /* CSS UTUH - Desain, Animasi & Layout */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #fcf8f5;
+            color: #4a2c11;
+            scroll-behavior: smooth;
+        }
+
+        header {
+            background-color: #5c3a21;
+            color: #fff;
+            text-align: center;
+            padding: 2rem 1rem;
+        }
+
+        header h1 { margin: 0; font-size: 2.5rem; }
+        header p { margin: 0.5rem 0 0; font-style: italic; color: #dfbda3; }
+
+        /* Navbar Sticky */
+        .navbar-top {
+            background-color: #4a2c11; 
+            text-align: center; 
+            padding: 12px 0; 
+            border-bottom: 2px solid #dfbda3;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .navbar-top button {
+            background: none;
+            border: none;
+            color: white; 
+            margin: 0 15px; 
+            font-weight: bold; 
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: color 0.2s, border-bottom 0.2s;
+        }
+
+        .navbar-top button:hover, .navbar-top button.active {
+            color: #dfbda3;
+            border-bottom: 2px solid #dfbda3;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        /* Sistem Pindah Halaman Beranimasi Subtle Fade-In */
+        .page-section {
+            display: none; 
+            opacity: 0;
+            transform: translateY(10px);
+            transition: opacity 0.4s ease, transform 0.4s ease;
+        }
+
+        .page-section.active {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Komponen Filter & Search */
+        .filter-container {
+            background: #fff;
+            border: 1px solid #e7dcd3;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        }
+
+        .filter-container input, .filter-container select {
+            padding: 8px 12px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 0.9rem;
+            color: #4a2c11;
+        }
+
+        .search-input { flex: 2; min-width: 200px; }
+        .filter-select { flex: 1; min-width: 150px; }
+
+        /* Layout Halaman Produk */
+        .product-page-layout {
+            display: grid;
+            grid-template-columns: 3fr 1fr;
+            gap: 2rem;
+        }
+
+        .product-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .product-card {
+            background: #fff;
+            border: 1px solid #e7dcd3;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .product-card:hover { 
+            transform: translateY(-5px); 
+            box-shadow: 0 6px 12px rgba(74,44,17,0.15);
+        }
+        
+        .product-card img { width: 100%; height: 180px; object-fit: cover; background-color: #eee; }
+
+        .product-info {
+            padding: 1rem;
+            text-align: center;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .product-info h3 { margin: 0 0 0.5rem; font-size: 1.2rem; color: #5c3a21; }
+        .product-info p { margin: 0 0 1rem; font-size: 0.9rem; color: #706055; line-height: 1.4; }
+        .product-price { font-weight: bold; color: #b55d24; font-size: 1.1rem; margin-bottom: 1rem !important; }
+
+        .btn-add-to-cart {
+            background-color: #5c3a21;
+            color: white;
+            border: none;
+            padding: 0.6rem;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+            font-weight: bold;
+            transition: background 0.2s;
+        }
+        .btn-add-to-cart:hover { background-color: #4a2c11; }
+
+        /* Sidebar Keranjang */
+        .cart-sidebar {
+            background: #fff;
+            border: 1px solid #e7dcd3;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            height: fit-content;
+            position: sticky;
+            top: 70px;
+        }
+
+        .cart-sidebar h2 { margin-top: 0; color: #5c3a21; border-bottom: 2px solid #e7dcd3; padding-bottom: 0.5rem; font-size: 1.4rem; }
+        .cart-items { list-style: none; padding: 0; margin: 0 0 1.5rem; max-height: 240px; overflow-y: auto; }
+        
+        .cart-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.9rem;
+            padding: 0.5rem 0;
+            border-bottom: 1px dashed #e7dcd3;
+            animation: fadeInItem 0.3s ease;
+        }
+
+        @keyframes fadeInItem {
+            from { opacity: 0; transform: translateX(10px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .cart-item-remove { background: none; border: none; color: #d32f2f; cursor: pointer; font-size: 0.8rem; }
+        .cart-total { font-size: 1.1rem; font-weight: bold; display: flex; justify-content: space-between; margin-top: 1rem; padding-top: 1rem; border-top: 2px solid #e7dcd3; margin-bottom: 15px; }
+        .btn-checkout { background-color: #b55d24; color: white; border: none; padding: 0.8rem 1rem; border-radius: 4px; cursor: pointer; width: 100%; font-size: 1rem; font-weight: bold; transition: background 0.2s; }
+        .btn-checkout:hover { background-color: #964b1a; }
+        .empty-message { font-style: italic; color: #9c8c82; text-align: center; padding: 1rem 0; }
+
+        /* Pop-Up Modal Pembayaran */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.6);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-box { background: white; padding: 2rem; border-radius: 8px; max-width: 450px; width: 90%; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
+        .payment-details-box { background: #fdf6f0; border: 1px dashed #b55d24; padding: 1rem; margin: 1rem 0; border-radius: 6px; }
+        .input-konfirmasi { width: 100%; padding: 10px; margin: 5px 0 15px; border: 1px solid #ccc; border-radius: 4px; box-sizing: border-box; }
+        .error-text { color: #d32f2f; font-size: 0.85rem; margin-top: -10px; margin-bottom: 10px; display: none; text-align: left; font-weight: bold;}
+
+        /* Notifikasi Teks (Tersembunyi di awal) */
+        .toast-notification {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background-color: #4a2c11;
+            color: #fff;
+            padding: 15px 25px;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            border-left: 5px solid #4caf50; 
+            z-index: 3000;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            
+            opacity: 0;
+            visibility: hidden;
+            transform: scale(0.8) translateY(20px);
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .toast-notification.show {
+            opacity: 1;
+            visibility: visible;
+            transform: scale(1) translateY(0);
+        }
+
+        @media (max-width: 768px) {
+            .product-page-layout { grid-template-columns: 1fr; }
+            .toast-notification { right: 20px; left: 20px; bottom: 20px; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Choco Bites by Dera</h1>
+        <p>Brownies Cokelat Lumer Kualitas Premium</p>
+    </header>
+
+    <!-- NAVBAR UTAMA -->
+    <nav class="navbar-top">
+        <button id="btn-home" class="active" onclick="pindahHalaman('home')">Home</button>
+        <button id="btn-produk" onclick="pindahHalaman('produk')">Produk</button>
+        <button id="btn-tentang" onclick="pindahHalaman('tentang')">Tentang</button>
+    </nav>
+
+    <div class="container">
+        
+        <!-- ================= HALAMAN 1: HOME ================= -->
+        <section id="page-home" class="page-section active">
+            <div style="background: linear-gradient(rgba(74, 44, 17, 0.75), rgba(92, 58, 33, 0.85)), url('https://raw.githubusercontent.com/deraayuniartii2022-sudo/ecommerce-sederhana-Dera-Yuniarti/main/Brownies.jpg'); background-size: cover; background-position: center; padding: 6rem 2rem; border-radius: 8px; text-align: center; box-shadow: 0 4px 15px rgba(0,0,0,0.1); margin-bottom: 2rem;">
+                <h2 style="color: #fff; margin-top: 0; font-size: 2.8rem; text-shadow: 2px 2px 4px rgba(0,0,0,0.5); font-family: 'Georgia', serif;">
+                    Kelezatan Brownies yang Sesungguhnya
+                </h2>
+                <p style="color: #dfbda3; line-height: 1.8; max-width: 650px; margin: 1.5rem auto; font-size: 1.2rem; text-shadow: 1px 1px 2px rgba(0,0,0,0.5);">
+                    Lapisan Brownies yang renyah di luar lembut di dalam berpadu sempurna dengan berbagai rasa dan topping. Dibuat fresh setiap hari langsung dari dapur kami.
+                </p>
+                <button onclick="pindahHalaman('produk')" style="background-color: #b55d24; color: white; border: none; padding: 14px 35px; font-size: 1.1rem; font-weight: bold; border-radius: 25px; cursor: pointer; box-shadow: 0 4px 15px rgba(181,93,36,0.5);">
+                    Pesan Sekarang & Rasakan Kelezatannya 🛒
+                </button>
+            </div>
+        </section>
+
+        <!-- ================= HALAMAN 2: PRODUK ================= -->
+        <section id="page-produk" class="page-section">
+            
+            <!-- PANEL FITUR CARI DAN FILTER PINTAR -->
+            <div class="filter-container">
+                <input type="text" id="search-box" class="search-input" placeholder="🔍 Masukkan rasa yang kamu mau (contoh: cokelat, keju, almond...)" oninput="jalankanFilterProduk()">
+                
+                <select id="filter-kategori" class="filter-select" onchange="jalankanFilterProduk()">
+                    <option value="semua">Semua Rasa</option>
+                    <option value="cokelat">Full Cokelat</option>
+                    <option value="keju-matcha">Keju, Matcha, Red Velvet</option>
+                    <option value="premium">Topping Premium</option>
+                </select>
+
+                <select id="filter-harga" class="filter-select" onchange="jalankanFilterProduk()">
+                    <option value="semua">Semua Harga</option>
+                    <option value="murah">Di bawah Rp 50.000</option>
+                    <option value="mahal">Rp 50.000 ke atas</option>
+                </select>
+            </div>
+
+            <div class="product-page-layout">
+                
+                <!-- Container Utama Grid 10 Produk -->
+                <div class="product-section" id="grid-produk-utama">
+                    
+                    <!-- Produk 1 -->
+                    <div class="product-card" data-nama="fudgy brownies" data-kategori="cokelat" data-harga="45000">
+                        <img alt="Fudge Brownies" src="https://raw.githubusercontent.com/deraayuniartii2022-sudo/ecommerce-sederhana-Dera-Yuniarti/main/Brownies.jpg">
+                        <div class="product-info">
+                            <h3>Fudgy Brownies</h3>
+                            <p>Cokelat pekat dengan tekstur kenyal yang memanjakan lidah.</p>
+                            <p class="product-price">Rp 45.000</p>
+                            <button class="btn-add-to-cart" onclick="tambahKeKeranjang('Fudgy Brownies', 45000)">Tambah ke Keranjang</button>
+                        </div>
+                    </div>
+
+                    <!-- Produk 2 -->
+                    <div class="product-card" data-nama="cheese cream melt" data-kategori="keju-matcha" data-harga="55000">
+                        <img alt="Brownies Keju" src="https://github.com/deraayuniartii2022-sudo/ecommerce-sederhana-Dera-Yuniarti/blob/main/Cheesecake%20Brownies_%205%20Irresistible%20Layers%20of%20Decadence.jpg?raw=true">
+                        <div class="product-info">
+                            <h3>Cheese Cream Melt</h3>
+                            <p>Perpaduan brownies cokelat dan lapisan keju gurih yang melimpah.</p>
+                            <p class="product-price">Rp 55.000</p>
+                            <button class="btn-add-to-cart" onclick="tambahKeKeranjang('Cheese Cream Melt', 55000)">Tambah ke Keranjang</button>
+                        </div>
+                    </div>
+
+                    <!-- Produk 3 -->
+                    <div class="product-card" data-nama="roasted almond" data-kategori="premium" data-harga="50000">
+                        <img alt="Brownies Almond" src="https://github.com/deraayuniartii2022-sudo/ecommerce-sederhana-Dera-Yuniarti/blob/main/Almond%20Brownies%20with%20Dulce%20De%20Leche.jpg?raw=true">
+                        <div class="product-info">
+                            <h3>Roasted Almond</h3>
+                            <p>Taburan kacang almond panggang yang renyah di setiap gigitan.</p>
+                            <p class="product-price">Rp 50.000</p>
+                            <button class="btn-add-to-cart" onclick="tambahKeKeranjang('Roasted Almond', 50000)">Tambah ke Keranjang</button>
+                        </div>
+                    </div>
+
+                    <!-- Produk 4 -->
+                    <div class="product-card" data-nama="matchalicious melt" data-kategori="keju-matcha" data-harga="52000">
+                        <img alt="Brownies Matcha" src="https://github.com/deraayuniartii2022-sudo/ecommerce-sederhana-Dera-Yuniarti/blob/main/Matcha%20Brownies%20-%20Texanerin%20Baking.jpg?raw=true">
+                        <div class="product-info">
+                            <h3>Matchalicious Melt</h3>
+                            <p>Brownies Matcha dengan taburan Chocochips yang manis.</p>
+                            <p class="product-price">Rp 52.000</p>
+                            <button class="btn-add-to-cart" onclick="tambahKeKeranjang('Matchalicious Melt', 52000)">Tambah ke Keranjang</button>
+                        </div>
+                    </div>
+
+                    <!-- Produk 5 -->
+                    <div class="product-card" data-nama="lotus biscoff delight" data-kategori="premium" data-harga="60000">
+                        <img alt="Brownies Lotus Biscoff" src="https://github.com/deraayuniartii2022-sudo/ecommerce-sederhana-Dera-Yuniarti/blob/main/Lotus%20Biscoff%20Brownies.jpg?raw=true">
+                        <div class="product-info">
+                            <h3>Lotus Biscoff Delight</h3>
+                            <p>Sensasi selai dan biskuit Lotus Biscoff legendaris di atas brownies.</p>
+                            <p class="product-price">Rp 60.000</p>
+                            <button class="btn-add-to-cart" onclick="tambahKeKeranjang('Lotus Biscoff Delight', 60000)">Tambah ke Keranjang</button>
+                        </div>
+                    </div>
+
+                    <!-- Produk 6 -->
+                    <div class="product-card" data-nama="red velvet choco" data-kategori="keju-matcha" data-harga="58000">
+                        <img alt="Brownies Red Velvet" src="https://github.com/deraayuniartii2022-sudo/ecommerce-sederhana-Dera-Yuniarti/blob/main/Kiss%20Me%20Red%20Velvet%20Brownies.jpg?raw=true">
+                        <div class="product-info">
+                            <h3>Red Velvet Choco</h3>
+                            <p>Warna merah yang mewah dengan kombinasi cream cheese lembut di atasnya.</p>
+                            <p class="product-price">Rp 58.000</p>
+                            <button class="btn-add-to-cart" onclick="tambahKeKeranjang('Red Velvet Choco', 58000)">Tambah ke Keranjang</button>
+                        </div>
+                    </div>
+
+                    <!-- Produk 7 -->
+                    <div class="product-card" data-nama="double chocochips" data-kategori="cokelat" data-harga="47000">
+                        <img alt="Brownies Choco Chips" src="https://github.com/deraayuniartii2022-sudo/ecommerce-sederhana-Dera-Yuniarti/blob/main/Cottage%20Cheese%20Protein%20Brownies_%20Einfach%20und%20k%C3%B6stlich.jpg?raw=true">
+                        <div class="product-info">
+                            <h3>Double Chocochips</h3>
+                            <p>Bagi pencinta cokelat sejati, dipenuhi limpahan chocochips yang meleleh setiap gigitan.</p>
+                            <p class="product-price">Rp 47.000</p>
+                            <button class="btn-add-to-cart" onclick="tambahKeKeranjang('Double Chocochips', 47000)">Tambah ke Keranjang</button>
+                        </div>
+                    </div>
+
+                    <!-- Produk 8 -->
+                    <div class="product-card" data-nama="signature medley box" data-kategori="premium" data-harga="65000">
+                        <img alt="Brownies Medley Topping" src="https://github.com/deraayuniartii2022-sudo/ecommerce-sederhana-Dera-Yuniarti/blob/main/%F0%9F%8D%AB%20Summer%20Brownie%20Gift%20Box%20%E2%80%93%20Sweet,%20Fudgy%20&%20Full%20of%20Love!%20%F0%9F%8D%93%F0%9F%92%9D.jpg?raw=true">
+                        <div class="product-info">
+                            <h3>Signature Medley Box</h3>
+                            <p>Satu box isi 4 sekat dengan 4 varian topping yang berbeda. Cocok dinikmati bersama keluarga.</p>
+                            <p class="product-price">Rp 80.000</p>
+                            <button class="btn-add-to-cart" onclick="tambahKeKeranjang('Signature Medley Box', 65000)">Tambah ke Keranjang</button>
+                        </div>
+                    </div>
+
+                    <!-- Produk 9 -->
+                    <div class="product-card" data-nama="nutella swirl premium" data-kategori="cokelat" data-harga="63000">
+                        <img alt="Brownies Nutella" src="https://github.com/deraayuniartii2022-sudo/ecommerce-sederhana-Dera-Yuniarti/blob/main/download%20(2).jpg?raw=true">
+                        <div class="product-info">
+                            <h3>Nutella Swirl Premium</h3>
+                            <p>Brownies manis dengan pusaran selai cokelat hazelnut Nutella asli di atasnya.</p>
+                            <p class="product-price">Rp 63.000</p>
+                            <button class="btn-add-to-cart" onclick="tambahKeKeranjang('Nutella Swirl Premium', 63000)">Tambah ke Keranjang</button>
+                        </div>
+                    </div>
+
+                    <!-- Produk 10 -->
+                    <div class="product-card" data-nama="oreo crunchy blast" data-kategori="premium" data-harga="48000">
+                        <img alt="Brownies Oreo" src="https://github.com/deraayuniartii2022-sudo/ecommerce-sederhana-Dera-Yuniarti/blob/main/Fudgy%20Oreo%20Brownies.jpg?raw=true">
+                        <div class="product-info">
+                            <h3>Oreo Crunchy Blast</h3>
+                            <p>Kombinasi adonan brownies pekat dengan remukan biskuit Oreo yang renyah.</p>
+                            <p class="product-price">Rp 48.000</p>
+                            <button class="btn-add-to-cart" onclick="tambahKeKeranjang('Oreo Crunchy Blast', 48000)">Tambah ke Keranjang</button>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- SIDEBAR KERANJANG BELANJA -->
+                <aside class="cart-sidebar">
+                    <h2>Keranjang Belanja</h2>
+                    <ul id="cart-items" class="cart-items">
+                        <li class="empty-message">Keranjang masih kosong</li>
+                    </ul>
+
+                    <div style="margin-bottom: 15px; background: #fff5ed; padding: 12px; border-radius: 6px; border: 1px solid #dfbda3;">
+                        <label for="metode-bayar" style="font-weight: bold; display: block; margin-bottom: 8px; font-size: 0.9rem; color: #5c3a21;">
+                            Pilih Metode Pembayaran:
+                        </label>
+                        <select id="metode-bayar" style="width: 100%; padding: 10px; border-radius: 4px; border: 1px solid #ccc; font-size: 0.9rem; background-color: #fff; cursor: pointer;">
+                            <option value="">-- Silakan Pilih --</option>
+                            <option value="BNI">Transfer BNI</option>
+                            <option value="BCA">Transfer BCA</option>
+                            <option value="DANA">DANA</option>
+                        </select>
+                    </div>
+
+                    <div class="cart-total">
+                        <span>Total Harga:</span>
+                        <span id="cart-total-price">Rp 0</span>
+                    </div>
+                    
+                    <button class="btn-checkout" onclick="bukaHalamanPembayaran()">Checkout Sekarang</button>
+                </aside>
+
+            </div>
+        </section>
+
+        <!-- ================= HALAMAN 3: TENTANG KAMI ================= -->
+        <section id="page-tentang" class="page-section">
+            <div style="background: white; padding: 2rem; border-radius: 8px; border: 1px solid #e7dcd3; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+                <h2 style="color: #5c3a21; margin-top: 0; text-align: center;">Tentang Kami</h2>
+                <div style="display: flex; flex-wrap: wrap; gap: 30px; justify-content: center; align-items: center; margin-top: 1.5rem;">
+                    
+                  <img src="https://github.com/deraayuniartii2022-sudo/ecommerce-sederhana-Dera-Yuniarti/blob/main/Gemini_Generated_Image_lw7ahzlw7ahzlw7a%20(1).jpg?raw=true" alt="Logo Toko" style="width: 100%; max-width: 280px; height: auto; object-fit: contain; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1);"> 
+                    <div style="flex: 1; min-width: 280px; color: #706055; line-height: 1.8; font-size: 1.05rem;">
+                        <p><strong>Choco Bites by Dera</strong> menghadirkan kue brownies berkualitas tinggi namun tetap ramah di kantong.Dengan kelezatan brownies premium yang dirancang khusus untuk menyempurnakan setiap momen berharga Anda. Baik sebagai teman setia ngopi di sore hari, camilan hangat bersama keluarga, hingga pelengkap manis di berbagai acara besar, kami memastikan setiap gigitannya membawa kebahagiaan yang tak terlupakan.</p>
+                        <p>Dibuat secara fresh dari oven setiap harinya, kami menjamin produk yang sampai ke tangan konsumen selalu dalam kondisi terbaik, higienis, dan tanpa bahan pengawet.</p>
+                        <p style="background-color: #fdf6f0; padding: 15px; border-left: 4px solid #b55d24; border-radius: 4px; margin-top: 1.5rem;">
+                            📍 <strong>Lokasi Toko:</strong> Rancaekek, Bandung, Jawa Barat.<br>
+                            🕒 <strong>Jam Operasional:</strong> Setiap Hari (08.00 - 20.00 WIB)
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <!-- ELEMEN NOTIFIKASI TOAST -->
+    <div id="cart-toast" class="toast-notification">
+        <span>✅</span>
+        <span id="toast-message">Produk sudah dimasukkan ke keranjang!</span>
+    </div>
+
+    <!-- WINDOW POP-UP MODAL CHECKOUT VALIDASI -->
+    <div class="modal-overlay" id="payment-modal">
+        <div class="modal-box">
+            <h3>Selesaikan Pembayaran Anda</h3>
+            <p>Silakan transfer sesuai dengan nominal total ke akun di bawah ini:</p>
+            
+            <div class="payment-details-box">
+                <h4 id="display-nama-bank" style="margin:0 0 5px; color:#b55d24;">-</h4>
+                <p id="display-rekening" style="font-size:1.2rem; font-weight:bold; margin:5px 0; color:#4a2c11;">-</p>
+                <p style="margin:5px 0 0; font-size:0.9rem;">Atas Nama: <strong>Dera Yuniarti</strong></p>
+            </div>
+
+            <div style="text-align: left; font-size: 0.9rem;">
+                <p style="font-size: 1rem; border-bottom: 1px solid #eee; padding-bottom: 5px;">Total Tagihan: <strong id="display-total-tagihan" style="color:#b55d24;">Rp 0</strong></p>
+                
+                <label style="font-weight: bold; display:block; margin-top:10px;">Nama Pengirim & Alamat Kirim:</label>
+                <input type="text" id="nama-pengirim" class="input-konfirmasi" placeholder="Contoh: Budi Santoso">
+                <div id="error-nama" class="error-text">❌ Nama pengirim wajib diisi!</div>
+                
+                <label style="font-weight: bold; display:block;">Unggah Bukti Transfer / Screenshot:</label>
+                <input type="file" id="bukti-file" class="input-konfirmasi" accept="image/*">
+                <div id="error-file" class="error-text">❌ Mohon sertakan foto bukti transfer!</div>
+            </div>
+
+            <button class="btn-checkout" style="background-color: #2e7d32; margin-top: 10px;" onclick="konfirmasiPembayaranSukses()">Konfirmasi Sudah Bayar</button>
+            <button class="btn-checkout" style="background-color: #757575; margin-top:8px;" onclick="tutupModal()">Batal</button>
+        </div>
+    </div>
+
+    <!-- FOOTER INFORMASI KONTAK -->
+    <footer style="background-color: #4a2c11; color: #dfbda3; text-align: center; padding: 2rem 1rem; margin-top: 3rem; border-top: 2px solid #dfbda3; font-size: 0.9rem;">
+        <p style="margin: 0 0 0.5rem 0; color: white; font-weight: bold; font-size: 1.2rem;">Choco Bites by Dera</p>
+        <p style="margin: 0 0 1.5rem 0; font-style: italic;">"Brownies Cokelat Lumer Kualitas Premium dari Rancaekek, Bandung"</p>
+        
+        <div style="margin: 1rem 0; display: flex; justify-content: center; flex-wrap: wrap; gap: 20px;">
+            <span style="color: white;">📞 <strong>WhatsApp:</strong> 0896-0884-5449</span>
+            <span style="color: white;">📧 <strong>Email:</strong> halo@chocobitesbydera.com</span>
+            <span style="color: white;">📸 <strong>Instagram:</strong> @chocobites.bydera</span>
+        </div>
+
+        <hr style="border: 0; border-top: 1px dashed #5c3a21; max-width: 400px; margin: 1.5rem auto;">
+        <p style="margin: 0;">&copy; Choco Bites by Dera. Made with ❤️ for Sweet Lovers.</p>
+    </footer>
+
+    <!-- LOGIKA JAVASCRIPT UTAMA (100% BERSIH DI AWAL & PROSES LOKAL) -->
+    <script>
+        let keranjang = [];
+        let totalHarga = 0;
+
+        const NOMOR_WHATSAPP_TOKO = "6289608845449"; 
+
+        const dataRekening = {
+            "BNI": "1122334455 (Bank BNI)",
+            "BCA": "1234567890 (Bank BCA)",
+            "DANA": "0896-0884-5449 (Aplikasi DANA)"
+        };
+
+        function pindahHalaman(namaHalaman) {
+            document.querySelectorAll('.page-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            document.querySelectorAll('.navbar-top button').forEach(button => {
+                button.classList.remove('active');
+            });
+
+            const targetPage = document.getElementById('page-' + namaHalaman);
+            const targetBtn = document.getElementById('btn-' + namaHalaman);
+            
+            targetPage.classList.add('active');
+            targetBtn.classList.add('active');
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function tampilkanNotifikasiToast(namaKue) {
+            const toast = document.getElementById('cart-toast');
+            const toastMsg = document.getElementById('toast-message');
+            
+            toastMsg.innerText = `"${namaKue}" sudah dimasukkan ke keranjang!`;
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        function tambahKeKeranjang(namaProduk, hargaProduk) {
+            keranjang.push({ nama: namaProduk, harga: hargaProduk });
+            totalHarga += hargaProduk;
+            perbaruiTampilanKeranjang();
+            tampilkanNotifikasiToast(namaProduk);
+        }
+
+        function hapusDariKeranjang(index) {
+            totalHarga -= keranjang[index].harga;
+            keranjang.splice(index, 1);
+            perbaruiTampilanKeranjang();
+        }
+
+        function perbaruiTampilanKeranjang() {
+            const kontainerItem = document.getElementById('cart-items');
+            kontainerItem.innerHTML = '';
+
+            if (keranjang.length === 0) {
+                kontainerItem.innerHTML = '<li class="empty-message">Keranjang masih kosong</li>';
+            } else {
+                keranjang.forEach((item, index) => {
+                    const li = document.createElement('li');
+                    li.className = 'cart-item';
+                    li.innerHTML = `
+                        <span class="cart-item-name">${item.nama}</span>
+                        <span>
+                            Rp ${item.harga.toLocaleString('id-ID')}
+                            <button class="cart-item-remove" onclick="hapusDariKeranjang(${index})">❌</button>
+                        </span>
+                    `;
+                    kontainerItem.appendChild(li);
+                });
+            }
+            document.getElementById('cart-total-price').innerText = `Rp ${totalHarga.toLocaleString('id-ID')}`;
+        }
+
+        function jalankanFilterProduk() {
+            const kataKunci = document.getElementById('search-box').value.toLowerCase();
+            const pilihanKategori = document.getElementById('filter-kategori').value;
+            const pilihanHarga = document.getElementById('filter-harga').value;
+            
+            const semuaKartuProduk = document.querySelectorAll('#grid-produk-utama .product-card');
+
+            semuaKartuProduk.forEach(card => {
+                const nama = card.getAttribute('data-nama');
+                const kategori = card.getAttribute('data-kategori');
+                const harga = parseInt(card.getAttribute('data-harga'));
+                const deskripsi = card.querySelector('.product-info p').innerText.toLowerCase();
+
+                const cocokKataKunci = nama.includes(kataKunci) || deskripsi.includes(kataKunci);
+                const cocokKategori = (pilihanKategori === 'semua' || kategori === pilihanKategori);
+                
+                let cocokHarga = false;
+                if (pilihanHarga === 'semua') {
+                    cocokHarga = true;
+                } else if (pilihanHarga === 'murah' && harga < 50000) {
+                    cocokHarga = true;
+                } else if (pilihanHarga === 'mahal' && harga >= 50000) {
+                    cocokHarga = true;
+                }
+
+                if (cocokKataKunci && cocokKategori && cocokHarga) {
+                    card.style.display = 'flex';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        function bukaHalamanPembayaran() {
+            if (keranjang.length === 0) {
+                alert('Keranjang Anda masih kosong!');
+                return;
+            }
+
+            const metode = document.getElementById('metode-bayar').value;
+            if (metode === "") {
+                alert('Silakan pilih metode pembayaran terlebih dahulu!');
+                return;
+            }
+
+            document.getElementById('display-nama-bank').innerText = `METODE: VIA ${metode}`;
+            document.getElementById('display-rekening').innerText = dataRekening[metode];
+            document.getElementById('display-total-tagihan').innerText = `Rp ${totalHarga.toLocaleString('id-ID')}`;
+            
+            document.getElementById('error-nama').style.display = 'none';
+            document.getElementById('error-file').style.display = 'none';
+
+            document.getElementById('payment-modal').style.display = 'flex';
+        }
+
+        function tutupModal() {
+            document.getElementById('payment-modal').style.display = 'none';
+        }
+
+        function konfirmasiPembayaranSukses() {
+            const namaInput = document.getElementById('nama-pengirim').value;
+            const fileInput = document.getElementById('bukti-file').value;
+            
+            let adaError = false;
+
+            if (namaInput.trim() === "") {
+                document.getElementById('error-nama').style.display = 'block';
+                adaError = true;
+            } else {
+                document.getElementById('error-nama').style.display = 'none';
+            }
+
+            if (fileInput === "") {
+                document.getElementById('error-file').style.display = 'block';
+                adaError = true;
+            } else {
+                document.getElementById('error-file').style.display = 'none';
+            }
+
+            if (adaError) return;
+
+            // Berhasil checkout secara lokal tanpa terlempar keluar dari web (Anti-Blokir)
+            alert(`Terima kasih, ${namaInput}!\n\nPembayaran sebesar Rp ${totalHarga.toLocaleString('id-ID')} telah kami terima. Pesanan Choco Bites kamu akan segera diproses dan dikirim ke alamatmu!`);
+            
+            // Mengosongkan kembali isi keranjang belanjaan
+            keranjang = [];
+            totalHarga = 0;
+            
+            perbaruiTampilanKeranjang();
+            document.getElementById('nama-pengirim').value = "";
+            document.getElementById('bukti-file').value = "";
+            tutupModal();
+        }
+    </script>
+</body>
+</html>
