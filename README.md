@@ -62,7 +62,7 @@ Website dibangun dengan kombinasi **HTML5** sebagai kerangka semantik elemen web
 ### 2. Integrasi Google Analytics 4 (GA4)
 Skrip pelacak dari Google Analytics disematkan secara global pada komponen utama `<head>` di dalam file `index.html` dengan ID Pelacak riil `G-SRV3K6SKSM`.
 
-Berikut potongan kodenya:
+Potongan kodenya adalah: 
 ```html
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
